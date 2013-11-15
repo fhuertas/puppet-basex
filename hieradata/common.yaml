@@ -1,0 +1,44 @@
+# basex, puppet
+# common.yaml.
+# Copyright Francisco Huertas, Center for Open Middleware, Universidad Politecnica de Madrid
+
+# Auxiliar variables
+array_token            : '::'
+max_tries              : 10  #time to try execute the some operations (20 s = 10 tries * 2 sec)
+try_sleep              : 2   # 
+
+# Aplication configuration parameters
+user                   : ''      # user
+password               : ''      # password
+oldpassword            : ''      # old password for the system
+basex_path             : ''      # application path
+basex_rest_url         : ''      # url of the basex rest services
+databases              : ''      # database to be created the format of this elemtns are: 
+# databases: 
+#   db1: 
+#     db_version: '1' # The version of the database, if the version is diferent that the last of the database, this is changed
+#     name: 'db_name' # The name of the database
+#     files:          # Files to store in the database
+#       - 'file1.xml'
+#       - 'f2_name_origin.xml:f2_name_destination.xml' # if the name of the file name are not equals in origin and destination 
+                                                       # this can be indicated using ':' 
+#   db2:
+#     . 
+#     . 
+#     . 
+#   db3: 
+#     . 
+#     . 
+#     . 
+#   dbn: 
+#     . 
+#     . 
+#     . 
+dbs                    : ''      # database to be created
+files                  : ''      # list of the file installed in the database
+java_home              : ''      # Java installation path
+catalina_home          : ''      # tomcat base installation
+tmp_dir                : ''      # a path of a tmp file
+persistent_directory   : ''      # Persistent directory where the dates can be saved
+HTTPLOCAL              : 'false' # operation mode
+RESTXQPATH             : '.'     # directory 

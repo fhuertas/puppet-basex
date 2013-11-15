@@ -1,0 +1,8 @@
+name 'fhuertas-basex'
+version '0.0.1'
+summary 'Install JRE without package system. This module install any jre version'
+source 'https://github.com/centeropenmiddleware/puppet-basex'
+project_page 'https://github.com/centeropenmiddleware/puppet-basex'
+description 'Install basex in a tomcat server and add files to de database'
+license 'Apache 2.0'
+author 'Francisco Huertas Ferrer'

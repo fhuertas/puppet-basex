@@ -1,0 +1,33 @@
+# basex, puppet
+# agent1.puppet.l3p1.centeropenmiddleware.com.yaml.pp
+# Copyright Francisco Huertas, Center for Open Middleware, Universidad Politecnica de Madrid
+
+user                   : 'admin' # user
+password               : 'admin' # password
+oldpassword            : 'admin' #old password for the system
+# (Debian.yaml value) basex_path             : '' # application path
+basex_rest_url         : 'http://localhost:8080/basex' # url of the basex rest services
+databases              :  #list of the file and dbs installed in the database
+  db1:
+    db_version : "2" 
+    name    : "services"  
+    files   : 
+      - 'AppLogsService.xml:app.xml'
+      - 'DBConnector.xml'
+  db2: 
+    db_version  : "1"
+    name    : "prueba"
+    files   : 
+      - 'dCSConnector.xml'
+      - 'PersistentRigelSession.xml'
+      - 'peque.xml:p.xml'
+# (Debian default) java_home              : '/usr/bin/jre' #Java installation path
+# (Debian default) tmp_dir                : '/tmp' # a path of a tmp file
+HTTPLOCAL              : 'false' # operation mode
+RESTXQPATH             : '.' #directory 
+
+# (Debial.yaml value) catalina_home          : ''      # tomcat base installation
+
+# persistent_dir         :             # Persistent directory where the dates can be saved (Defined in Debian.yaml)
+#  - %{::puppet_vardir}
+#  - "/basex"

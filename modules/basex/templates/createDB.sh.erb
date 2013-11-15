@@ -1,0 +1,45 @@
+#!/bin/bash
+
+user="<%= @user %>"
+pass="<%= @password %>"
+auth=`echo -n $user:$pass | base64`
+db="<%= @name %>"
+files="<%= @joined_files %>"
+persistent_dir="<%= @persistent_dir %>"
+baseurl="<%= @basex_rest_url %>"
+rest_url=$baseurl"/rest"
+
+
+function log {
+   echo "["`date`"]: "$1 >> $persistent_dir/log.txt
+}
+
+log "Authorization phase"
+# Comprobar la version
+authcode=`curl -GsL -w %{http_code} -H "Authorization: Basic $auth" --data-urlencode "command=OPEN $db" $rest_url -o /dev/null`
+log "Authorization result is: $authcode"
+if [ "$authcode" == "200" ]; then
+  log "The database $db exist and you can access it"
+elif [ "$authcode" == "400" ]; then
+  authcode=`curl -GsL -w %{http_code} -X PUT -H "Authorization: Basic $auth" $rest_url/$db -o /dev/null`
+  log "The database $db did not exist, It has been created, result: $authcode"
+else 
+  log "Access denied"
+  exit 1
+fi 
+
+
+for file in $files
+do
+  # The file has the format filename_o:filename_d or filename_o
+  IFS=: read file_o file_d <<< "$file"
+
+  if [ "$file_d" == "" ]; then
+    file_d=$file
+  fi 
+#  echo "$file_o - $file_d - $file"
+  authcode=`curl -GsL -w %{http_code} --upload-file $file_o -X PUT -H "Authorization: Basic $auth" $rest_url/$db/$file_d -o /dev/null`
+#  log "curl -GsL -w %{http_code} -F name=@$file -X PUT -H \"Authorization: Basic $auth\" $rest_url/$db/$file -o /dev/null" 
+  log "Result of create $file was $authcode"
+done
+

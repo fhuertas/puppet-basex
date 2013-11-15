@@ -1,0 +1,75 @@
+#!/bin/bash
+# Copyright Francisco Huertas, Center for Open Middleware, Universidad Politecnica de Madrid
+
+basexpath="<%= @basex_path %>"
+basexpath_2="$basexpath/WEB-INF"
+persistent_dir="<%= @persistent_dir %>"
+baseurl="<%= @basex_rest_url %>"
+rest_url="$baseurl/rest"
+user="<%= @user %>"
+newpass="<%= @password %>"
+oldpass="<%= @oldpassword %>"
+#n no new line
+oldauth=`echo -n $user:$oldpass | base64`
+newauth=`echo -n $user:$newpass | base64`
+dbs="<%= @dbs_splited %>"
+
+function log {
+   echo "["`date`"]: "$1 >> $persistent_dir/log.txt
+}
+
+# configfile="<%= @configfile %>"
+
+# creating persistent directory
+mkdir -p $persistent_dir 
+
+if [ -d $basexpath_2 ] ; then 
+  # check if the configuration file is the same, it can be done with puppet, however can be done here
+  md5_1=`md5sum web.xml | tr -s ' ' | cut -d ' ' -f 1`
+  md5_2=`md5sum $basexpath_2/web.xml | tr -s ' ' | cut -d ' ' -f 1`
+  log "result: $md5_1 - $md5_2"
+  if [ "$md5_1" != "$md5_2" ]; then
+     log "Updating configuration"
+     cp web.xml $basexpath_2
+  fi
+
+  # Updating user/password, it will be done in phases
+  # 1 - Authenticate in the server, if the authentication cannot be done: 
+  # 2a- Authenticate with the new password, if the authentication can be done, the script not change the password an continue
+  #      if not, the script fail
+  # 2b- If the authentication can be done: make the change of the password 
+  log "$user $oldpass $newpass $oldauth - $newauth" 
+  #exit 0
+  
+  authcode=`curl -sL -w %{http_code} -H "Authorization: Basic $newauth" $rest_url -o /dev/null`
+  if [ "$authcode" != "200" ]; then
+     # The authentication with the old password has been done, changing the password
+    md5pass=`echo -n $newpass | md5sum`
+    authcode=`curl -GsL -w %{http_code} -H "Authorization: Basic $oldauth" --data-urlencode "command=PASSWORD $md5pass" $rest_url -o /dev/null`
+ 
+    if [ "$authcode" != "200" ]; then
+      log "Authentication fails"
+      exit 1
+    fi 
+    log "Authentication sucess: $authcode, password changed"
+  else
+    log "Authentication sucess: $authcode"
+  fi
+#  for db in $dbs
+#  do
+#    log $db
+#    authcode=`curl -GsL -w %{http_code} -H "Authorization: Basic $newauth" --data-urlencode "command=OPEN $db" $rest_url -o /dev/null`
+#    if [ "$authcode" == "200" ]; then
+#      log "The database $db exist and you can access it"
+#    else 
+#      log "The database $db do not exist or you cannot access it"
+#      authcode=`curl -GsL -w %{http_code} -X PUT -H "Authorization: Basic $newauth" $rest_url/$db -o /dev/null`
+#    fi 
+#  done 
+  exit 0
+else
+  log "Path not exist $basexpath" 
+  exit 1
+fi
+
+

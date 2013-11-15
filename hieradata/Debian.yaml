@@ -1,0 +1,22 @@
+#t7::params::deploy_wars}" basex, puppet
+# Debian.yaml
+# Copyright Francisco Huertas, Center for Open Middleware, Universidad Politecnica de Madrid
+user                   : ''      # user
+password               : ''      # password
+oldpassword            : ''      # old password for the system
+catalina_home          : &catalina_home '/var/lib/tomcat7'      # tomcat base installation
+basex_path             :         # application path
+  - *catalina_home
+  - "/webapps/basex"
+basex_rest_url         : ''      # url of the basex rest services
+databases              : ''      # database to be created
+files                  : ''      # list of the file installed in the database
+java_home              : '/usr/bin/jre'      # Java installation path
+tmp_dir                : '/tmp'      # a path of a tmp file
+persistent_dir         :             # Persistent directory where the dates can be saved
+  - %{::puppet_vardir}
+  - "/basex"
+
+# (common default) HTTPLOCAL              : 'false' # operation mode
+# (common default) RESTXQPATH             : '.'     # directory 
+
